@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Snake</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="layout">
+    <section class="game-card">
+      <header class="hud">
+        <div class="stat"><span class="label">Spelare</span><span id="player" class="value">-</span></div>
+        <div class="stat"><span class="label">Poäng</span><span id="score" class="value">0</span></div>
+        <div class="stat"><span class="label">Bäst</span><span id="best" class="value">0</span></div>
+        <div class="stat"><span class="label">Kombo</span><span id="combo" class="value">x1</span></div>
+      </header>
+
+      <div class="board-wrap">
+        <canvas id="board" width="800" height="560"></canvas>
+
+        <div id="overlay-start" class="overlay">
+          <h1>SNAKE</h1>
+          <p class="cheer">Heja GAIS! 💚🖤</p>
+          <form id="start-form">
+            <input id="username" type="text" maxlength="20" placeholder="Ange användarnamn" autocomplete="off" required>
+            <button type="submit">Spela</button>
+          </form>
+          <p class="hint">Piltangenter / WASD &middot; Space = paus &middot; Svep på mobil<br>Väggarna är öppna – du kommer ut på andra sidan!</p>
+        </div>
+
+        <div id="overlay-over" class="overlay hidden">
+          <h2>Game over</h2>
+          <p class="final">Poäng: <strong id="final-score">0</strong></p>
+          <p id="save-status" class="hint"></p>
+          <div class="buttons">
+            <button id="again" type="button">Spela igen (Space)</button>
+            <button id="change" type="button" class="secondary">Byt spelare</button>
+          </div>
+        </div>
+
+        <div id="overlay-pause" class="overlay hidden"><h2>Paus</h2><p class="hint">Tryck Space eller tryck här för att fortsätta</p></div>
+      </div>
+
+      <div class="dpad" aria-label="Styrknappar">
+        <button type="button" data-dir="up" class="up">▲</button>
+        <button type="button" data-dir="left" class="left">◀</button>
+        <button type="button" id="btn-pause" class="pause secondary">⏸</button>
+        <button type="button" data-dir="right" class="right">▶</button>
+        <button type="button" data-dir="down" class="down">▼</button>
+      </div>
+    </section>
+
+    <aside class="side-card">
+      <h3 class="server-only">Topplista</h3>
+      <ol id="leaderboard" class="server-only"></ol>
+      <p class="hint small server-only">Alla resultat sparas i highscores.xlsx</p>
+
+      <h3 class="tips-title">Så funkar det</h3>
+      <ul class="tips">
+        <li><span>🍎</span> Äpple: 10 poäng</li>
+        <li><span>⭐</span> Gyllene äpple: 50 poäng, försvinner snabbt</li>
+        <li><span>🔥</span> Kombo: ät inom 4 sek för upp till x5</li>
+        <li><span>🐢</span> Slow-motion i 6 sek</li>
+        <li><span>👻</span> Spökläge: gå igenom dig själv och stenar</li>
+        <li><span>🪨</span> Stenar dyker upp var 5:e äpple</li>
+      </ul>
+    </aside>
+  </main>
+  <script src="game.js"></script>
+</body>
+</html>
