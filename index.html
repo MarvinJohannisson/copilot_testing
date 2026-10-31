@@ -2,7 +2,10 @@
 <html lang="sv">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#0b1020">
   <title>Snake</title>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -26,7 +29,8 @@
             <input id="username" type="text" maxlength="20" placeholder="Ange användarnamn" autocomplete="off" required>
             <button type="submit">Spela</button>
           </form>
-          <p class="hint">Piltangenter / WASD &middot; Space = paus &middot; Svep på mobil<br>Väggarna är öppna – du kommer ut på andra sidan!</p>
+          <p class="hint hint-desktop">Piltangenter / WASD &middot; Space = paus<br>Väggarna är öppna – du kommer ut på andra sidan!</p>
+          <p class="hint hint-touch">Tryck ovanför, under eller bredvid ormen för att svänga<br>Väggarna är öppna – du kommer ut på andra sidan!</p>
         </div>
 
         <div id="overlay-over" class="overlay hidden">
@@ -39,15 +43,7 @@
           </div>
         </div>
 
-        <div id="overlay-pause" class="overlay hidden"><h2>Paus</h2><p class="hint">Tryck Space eller tryck här för att fortsätta</p></div>
-      </div>
-
-      <div class="dpad" aria-label="Styrknappar">
-        <button type="button" data-dir="up" class="up">▲</button>
-        <button type="button" data-dir="left" class="left">◀</button>
-        <button type="button" id="btn-pause" class="pause secondary">⏸</button>
-        <button type="button" data-dir="right" class="right">▶</button>
-        <button type="button" data-dir="down" class="down">▼</button>
+        <div id="overlay-pause" class="overlay hidden"><h2>Paus</h2><p class="hint"><span class="hint-desktop">Tryck Space eller tryck här för att fortsätta</span><span class="hint-touch">Tryck här för att fortsätta</span></p></div>
       </div>
     </section>
 

@@ -256,24 +256,39 @@
     } else if (e.key === "p" || e.key === "P") togglePause();
   });
 
-  let touch = null;
-  document.querySelectorAll("[data-dir]").forEach((btn) => {
-    const dirs = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
-    btn.addEventListener("pointerdown", (e) => {
-      e.preventDefault();
-      if (state === "playing") turn(...dirs[btn.dataset.dir]);
-    });
-  });
-  $("btn-pause").addEventListener("pointerdown", (e) => { e.preventDefault(); togglePause(); });
-  ui.pause.addEventListener("click", togglePause);
-  canvas.addEventListener("touchstart", (e) => { touch = e.touches[0]; }, { passive: true });
-  canvas.addEventListener("touchend", (e) => {
-    if (!touch || state !== "playing") return;
-    const t = e.changedTouches[0], dx = t.clientX - touch.clientX, dy = t.clientY - touch.clientY;
-    if (Math.max(Math.abs(dx), Math.abs(dy)) < 20) return;
+  // Touch: tap above/below/left/right of the snake's head to steer. turn() rejects 180° reversals.
+  canvas.addEventListener("pointerdown", (e) => {
+    if (e.pointerType === "mouse" || state !== "playing") return;
+    e.preventDefault();
+    const rect = canvas.getBoundingClientRect();
+    const k = W / rect.width;
+    const dx = (e.clientX - rect.left) * k - (snake[0].x + 0.5) * CELL;
+    const dy = (e.clientY - rect.top) * k - (snake[0].y + 0.5) * CELL;
     if (Math.abs(dx) > Math.abs(dy)) turn(Math.sign(dx), 0); else turn(0, Math.sign(dy));
-    touch = null;
-  }, { passive: true });
+  });
+  ui.pause.addEventListener("click", togglePause);
+  // A phone has no pause key, so pause when the page is hidden or the screen locks.
+  document.addEventListener("visibilitychange", () => { if (document.hidden && state === "playing") togglePause(); });
+
+  // Fit the board to the visible area (width and height) so it never needs scrolling on phones.
+  function fitCanvas() {
+    const px = (v) => parseFloat(v) || 0;
+    const layout = getComputedStyle(document.querySelector(".layout"));
+    const card = canvas.closest(".game-card"), cardCss = getComputedStyle(card);
+    const hud = card.querySelector(".hud");
+    const padX = px(layout.paddingLeft) + px(layout.paddingRight) + px(cardCss.paddingLeft) + px(cardCss.paddingRight) + 4;
+    const padY = px(layout.paddingTop) + px(layout.paddingBottom) + px(cardCss.paddingTop) + px(cardCss.paddingBottom)
+      + hud.offsetHeight + px(getComputedStyle(hud).marginBottom) + 4;
+    const vw = document.documentElement.clientWidth, vh = window.innerHeight;
+    const w = Math.max(200, Math.min(800, vw - padX, (vh - padY) * W / H));
+    canvas.style.width = Math.floor(w) + "px";
+    canvas.style.height = Math.floor(w * H / W) + "px";
+  }
+  window.addEventListener("resize", fitCanvas);
+  window.addEventListener("load", fitCanvas);
+  window.addEventListener("orientationchange", () => setTimeout(fitCanvas, 200));
+  if (window.visualViewport) window.visualViewport.addEventListener("resize", fitCanvas);
+  fitCanvas();
 
   $("start-form").addEventListener("submit", (e) => {
     e.preventDefault();
@@ -329,8 +344,20 @@
     ctx.restore();
   }
 
+  // ctx.roundRect is missing in Safari < 16, so build the path by hand.
+  function rrPath(x, y, w, h, r) {
+    r = Math.min(r, w / 2, h / 2);
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+
   function roundRect(x, y, w, h, r) {
-    ctx.beginPath(); ctx.roundRect(x, y, w, h, r); ctx.fill();
+    rrPath(x, y, w, h, r); ctx.fill();
   }
 
   // Draw at (x, y) and at the wrapped position when near an edge.
@@ -438,8 +465,8 @@
     for (const key of Object.keys(POWER)) {
       const left = effects[key] - gameTime;
       if (left <= 0) continue;
-      ctx.fillStyle = "rgba(10,15,29,0.7)"; ctx.beginPath(); ctx.roundRect(W - 150, y, 140, 26, 13); ctx.fill();
-      ctx.fillStyle = POWER[key].color; ctx.beginPath(); ctx.roundRect(W - 148, y + 2, 136 * (left / EFFECT_TIME), 22, 11);
+      ctx.fillStyle = "rgba(10,15,29,0.7)"; roundRect(W - 150, y, 140, 26, 13);
+      ctx.fillStyle = POWER[key].color; rrPath(W - 148, y + 2, 136 * (left / EFFECT_TIME), 22, 11);
       ctx.globalAlpha = 0.35; ctx.fill(); ctx.globalAlpha = 1;
       ctx.fillStyle = "#fff"; ctx.font = "12px 'Segoe UI Emoji', 'Segoe UI', sans-serif";
       ctx.textAlign = "left"; ctx.textBaseline = "middle";

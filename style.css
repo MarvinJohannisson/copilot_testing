@@ -11,11 +11,16 @@
 
 * { box-sizing: border-box; }
 
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
 body {
   margin: 0;
   min-height: 100vh;
+  min-height: 100dvh;
   display: grid;
   place-items: center;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
   font-family: "Segoe UI", system-ui, sans-serif;
   color: var(--text);
   background: radial-gradient(1200px 700px at 20% 10%, var(--bg2), transparent 60%),
@@ -39,6 +44,7 @@ body::after { bottom: 4vh; right: -2vw; font-size: 12vw; transform: rotate(6deg)
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: 20px;
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
 }
@@ -54,13 +60,13 @@ body::after { bottom: 4vh; right: -2vw; font-size: 12vw; transform: rotate(6deg)
 #combo { color: var(--muted); transition: color 0.2s, transform 0.2s; }
 #combo.hot { color: #fbbf24; transform: scale(1.15); text-shadow: 0 0 12px rgba(251, 191, 36, 0.6); }
 
-.board-wrap { position: relative; line-height: 0; border-radius: 14px; overflow: hidden; }
-canvas { width: min(800px, 92vw); height: auto; border-radius: 14px; border: 1px solid var(--border); background: #0a0f1d; touch-action: none; }
+.board-wrap { position: relative; line-height: 0; border-radius: 14px; overflow: hidden; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+canvas { display: block; width: min(800px, 92vw); height: auto; border-radius: 14px; border: 1px solid var(--border); background: #0a0f1d; touch-action: none; }
 
 .overlay {
-  position: absolute; inset: 0; line-height: normal;
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
-  background: rgba(8, 11, 24, 0.78); backdrop-filter: blur(4px); text-align: center;
+  position: absolute; top: 0; right: 0; bottom: 0; left: 0; line-height: normal;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 12px;
+  background: rgba(8, 11, 24, 0.78); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); text-align: center;
 }
 .hidden { display: none; }
 
@@ -112,14 +118,16 @@ ol li.empty { color: var(--muted); justify-content: center; }
 .no-server .server-only { display: none; }
 .no-server .tips-title { margin-top: 0; }
 
-/* On-screen controls, only on touch devices. */
-.dpad { display: none; margin-top: 12px; grid-template-columns: repeat(3, 1fr); grid-template-areas: ". up pause" "left down right"; gap: 8px; user-select: none; -webkit-user-select: none; }
-.dpad button { padding: 16px 0; font-size: 22px; touch-action: manipulation; }
-.dpad .up { grid-area: up; } .dpad .down { grid-area: down; } .dpad .left { grid-area: left; } .dpad .right { grid-area: right; } .dpad .pause { grid-area: pause; }
-@media (pointer: coarse) { .dpad { display: grid; } }
+/* Touch devices steer by tapping the board, so only the matching hint is shown. */
+.hint-touch { display: none; }
+@media (pointer: coarse) {
+  .hint-desktop { display: none; }
+  .hint-touch { display: inline; }
+  p.hint-touch { display: block; }
+}
 
 @media (max-width: 640px) {
-  .layout { padding: 10px; }
+  .layout { padding: 10px; padding-left: max(10px, env(safe-area-inset-left)); padding-right: max(10px, env(safe-area-inset-right)); }
   .game-card { padding: 10px; }
   .side-card { width: 100%; }
   h1 { font-size: 44px; }
