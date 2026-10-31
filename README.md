@@ -4,7 +4,7 @@ Ett Snake-spel som körs direkt i webbläsaren (dator och mobil). Heja GAIS! �
 
 ## Spela
 - **Dator:** piltangenter eller WASD, Space för paus.
-- **Mobil:** tryck på skärmen ovanför, under eller bredvid ormen för att svänga. Spelet pausas när du lämnar sidan.
+- **Mobil:** tryck åt det håll du vill svänga. Åker ormen upp eller ner räknas bara om du trycker till höger eller vänster om den, och åker den åt sidorna räknas bara över eller under. Avståndet spelar ingen roll. Spelet pausas när du lämnar sidan.
 - Väggarna är öppna: du kommer ut på andra sidan.
 - Gyllene äpplen, kombopoäng, power-ups (🐢 slow-motion, 👻 spökläge) och stenar gör det lite svårare.
 - Ditt personbästa sparas i webbläsaren.

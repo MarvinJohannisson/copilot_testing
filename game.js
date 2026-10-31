@@ -256,7 +256,7 @@
     } else if (e.key === "p" || e.key === "P") togglePause();
   });
 
-  // Touch: tap above/below/left/right of the snake's head to steer. turn() rejects 180° reversals.
+  // Touch: tap beside the snake's head to steer relative to its heading. turn() rejects 180° reversals.
   canvas.addEventListener("pointerdown", (e) => {
     if (e.pointerType === "mouse" || state !== "playing") return;
     e.preventDefault();
@@ -264,7 +264,12 @@
     const k = W / rect.width;
     const dx = (e.clientX - rect.left) * k - (snake[0].x + 0.5) * CELL;
     const dy = (e.clientY - rect.top) * k - (snake[0].y + 0.5) * CELL;
-    if (Math.abs(dx) > Math.abs(dy)) turn(Math.sign(dx), 0); else turn(0, Math.sign(dy));
+    // Only the axis perpendicular to the current heading matters, so a tap far below
+    // but slightly right still turns right when the snake is moving up or down.
+    const ref = queue.length ? queue[queue.length - 1] : dir;
+    const dead = CELL * 0.25;
+    if (ref.x === 0) { if (Math.abs(dx) > dead) turn(Math.sign(dx), 0); }
+    else if (Math.abs(dy) > dead) turn(0, Math.sign(dy));
   });
   ui.pause.addEventListener("click", togglePause);
   // A phone has no pause key, so pause when the page is hidden or the screen locks.
